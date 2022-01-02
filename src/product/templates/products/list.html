@@ -17,7 +17,7 @@
             </div>
             <div class="col-md-2">
                 <select name="variant" id="" class="form-control">
-                    <option selected disabled>--Select A Variant--</option>
+                    <option selected >--Select A Variant--</option>
 
                 </select>
             </div>
@@ -55,12 +55,14 @@
                 </thead>
 
                 <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>T-Shirt <br> Created at : 25-Aug-2020</td>
-                    <td>Quality product in low cost</td>
-                    <td>
-                        <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
+                {% for p in items %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ p.title }} <br> Created at : {{ p.created_at|date:"d-M-Y" }}</td>
+                        <td>{{ p.description }}</td>
+                        <td>
+
+                            <dl class="row mb-0" style="height: 80px; overflow: hidden" id="variant">
 
                             <dt class="col-sm-3 pb-0">
                                 SM/ Red/ V-Nick
@@ -72,17 +74,17 @@
                                 </dl>
                             </dd>
                         </dl>
-                        <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
-                        </button>
-                    </td>
-                    <td>
-                        <div class="btn-group btn-group-sm">
-                            <a href="" class="btn btn-success">Edit</a>
-                        </div>
-                    </td>
-                </tr>
+                            <button onclick="$('#variant').toggleClass('h-auto')" class="btn btn-sm btn-link">Show more
+                            </button>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="" class="btn btn-success">Edit</a>
+                            </div>
+                        </td>
+                    </tr>
                 </tbody>
-
+            {% endfor %}
             </table>
         </div>
 
@@ -91,10 +93,32 @@
     <div class="card-footer">
         <div class="row justify-content-between">
             <div class="col-md-6">
-                <p>Showing 1 to 10 out of 100</p>
+                <p>Showing {{ page_obj.start_index }} to {{ page_obj.end_index }} out of {{ paginator.count }}</p>
             </div>
             <div class="col-md-2">
-
+                <div class="pagination">
+                    <ul class="pagination">
+                        {% if is_paginated %}
+                           {% if page_obj.has_previous %}
+                                <li class="page-item"><a class="page-link" href="/product/list/?browse={{ input }}&page={{ page_obj.previous_page_number }}">&laquo;</a></li>
+                           {% endif %}
+                           {% for num in page_obj.paginator.page_range %}
+                              {% if page_obj.number == num %}
+                                    <li class="page-item active" aria-current="page">
+                                        <a class="page-link" href="/product/list/?browse={{ input }}&page={{ num }}">{{ num }}</a>
+                                    </li>
+                              {% elif num > page_obj.number|add:'-2' and num < page_obj.number|add:'2' %}
+                                    <li class="page-item" aria-current="page">
+                                        <a class="page-link" href="/product/list/?browse={{ input }}&page={{ num }}">{{ num }}</a>
+                                    </li>
+                              {% endif %}
+                           {% endfor %}
+                           {% if page_obj.has_next %}
+                                <li class="page-item"><a class="page-link" href="/product/list/?browse={{ input }}&page={{ page_obj.next_page_number }}">&raquo;</a></li>
+                           {% endif %}
+                        {% endif %}
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
