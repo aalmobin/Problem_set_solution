@@ -35,13 +35,13 @@
             <h6 class="m-0 font-weight-bold text-primary">Variants</h6>
           </div>
           <div class="card-body">
-            <div class="row" v-for="(item,index) in product_variant">
+            <div class="row" v-for="(item,index) in product_variant" :key="index">
               <div class="col-md-4">
                 <div class="form-group">
                   <label for="">Option</label>
                   <select v-model="item.option" class="form-control">
                     <option v-for="variant in variants"
-                            :value="variant.id">
+                            :value="variant.id" :key="variant.id">
                       {{ variant.title }}
                     </option>
                   </select>
@@ -74,7 +74,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr v-for="variant_price in product_variant_prices">
+                <tr v-for="variant_price in product_variant_prices" :key="variant_price">
                   <td>{{ variant_price.title }}</td>
                   <td>
                     <input type="text" class="form-control" v-model="variant_price.price">
@@ -100,6 +100,8 @@
 import vue2Dropzone from 'vue2-dropzone'
 import 'vue2-dropzone/dist/vue2Dropzone.min.css'
 import InputTag from 'vue-input-tag'
+import axios from 'axios'
+import Cookies from "js-cookie";
 
 export default {
   components: {
@@ -187,9 +189,14 @@ export default {
         product_variant: this.product_variant,
         product_variant_prices: this.product_variant_prices
       }
+      console.log(product)
 
-
-      axios.post('/product', product).then(response => {
+      const CSRF_TOKEN = Cookies.get("csrftoken");
+      const headers = {
+      "content-type": "application/json",
+      "X-CSRFToken": CSRF_TOKEN
+      }
+      axios.post('/product/create/', product, {headers: headers}).then(response => {
         console.log(response.data);
       }).catch(error => {
         console.log(error);
